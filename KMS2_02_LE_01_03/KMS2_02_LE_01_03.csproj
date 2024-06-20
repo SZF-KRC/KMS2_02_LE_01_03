@@ -58,10 +58,11 @@
     </ApplicationDefinition>
     <Compile Include="Events\BookEvents\BookEventArgs.cs" />
     <Compile Include="Events\BookEvents\Process.cs" />
-    <Compile Include="MVVM\BooleanToVidibilityConverter.cs" />
+    <Compile Include="Manager\FilterManager.cs" />
+    <Compile Include="SaveData\SaveCSV.cs" />
+    <Compile Include="SaveData\SaveDialog.cs" />
     <Compile Include="UploadData\OpenDialog.cs" />
     <Compile Include="UploadData\UploadCSV.cs" />
-    <Compile Include="ViewModels\BookViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -76,6 +77,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Styles\ButtonStyle\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Manager\BookManager.cs" />
@@ -107,8 +112,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

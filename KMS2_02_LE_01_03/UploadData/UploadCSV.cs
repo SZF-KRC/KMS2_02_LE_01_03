@@ -2,16 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace KMS2_02_LE_01_03.UploadData
 {
+    /// <summary>
+    /// Klasse zum Hochladen von Büchern aus einer CSV-Datei.
+    /// </summary>
     public class UploadCSV
     {
         private static List<Book> _books;
+
+        /// <summary>
+        /// Öffnet einen Dateiöffnungsdialog und lädt die Bücher aus der ausgewählten CSV-Datei.
+        /// </summary>
         public static void Upload()
         {
             try
@@ -36,6 +40,11 @@ namespace KMS2_02_LE_01_03.UploadData
             catch (FileNotFoundException ex) { MessageBox.Show(ex.Message); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+
+        /// <summary>
+        /// Gibt die Liste der hochgeladenen Bücher zurück.
+        /// </summary>
+        /// <returns>Eine Liste der Bücher.</returns>
         public List<Book> GetBooks() => _books;
     }
 }

@@ -1,7 +1,7 @@
-﻿using KMS2_02_LE_01_03.Interfaces;
-using KMS2_02_LE_01_03.Manager;
+﻿using KMS2_02_LE_01_03.Manager;
 using KMS2_02_LE_01_03.Model;
 using KMS2_02_LE_01_03.MVVM;
+using KMS2_02_LE_01_03.SaveData;
 using KMS2_02_LE_01_03.UploadData;
 using System;
 using System.Collections.ObjectModel;
@@ -9,29 +9,67 @@ using System.Linq;
 
 namespace KMS2_02_LE_01_03.ViewModels
 {
+    /// <summary>
+    /// Haupt-ViewModel-Klasse zur Verwaltung der Buchansicht.
+    /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private IBookManager _bookManager;
+        private BookManager _bookManager;
         private Book _selectedBook;
         private string _filterText;
-        private bool _isCalendarVisible;
-        private DateTime? _publicationDate;
         private string _selectedFilterOption;
-        private Book _book = new Book();
 
+        private readonly FilterManager _bookFilter;
 
+        /// <summary>
+        /// Sammlung aller Bücher.
+        /// </summary>
         public ObservableCollection<Book> Books { get; }
+
+        /// <summary>
+        /// Gefilterte Buchsammlung basierend auf dem Filtertext und der ausgewählten Filteroption.
+        /// </summary>
         public ObservableCollection<Book> FilteredBooks { get; set; }
 
+        /// <summary>
+        /// Befehl zum Hinzufügen eines neuen Buches.
+        /// </summary>
         public RelayCommand AddBookCommand => new RelayCommand(AddBook,CanAddBook);
-        public RelayCommand RemoveBookCommand => new RelayCommand(RemoveBook, CanModifyBook);
-        //public RelayCommand UpdateBookCommand => new RelayCommand(UpdateBook,CanModifyBook);
-       // public RelayCommand FilterBooksCommand => new RelayCommand(FilterBooks);
+
+        /// <summary>
+        /// Befehl zum Entfernen eines ausgewählten Buches.
+        /// </summary>
+        public RelayCommand RemoveBookCommand => new RelayCommand(RemoveBook, CanRemoveBook);
+
+        /// <summary>
+        /// Befehl zum Hochladen von Büchern.
+        /// </summary>
         public RelayCommand UploadBookCommand => new RelayCommand(UploadBooks);
 
+        /// <summary>
+        /// Befehl zum Speichern der Bücher.
+        /// </summary>
+        public RelayCommand SaveBookCommand => new RelayCommand(SaveBook, CanSave);
+
+        /// <summary>
+        /// Befehl zum Aktualisieren der Bücher.
+        /// </summary>
+        public RelayCommand UpdateBookCommand => new RelayCommand(UpdateBook, CanAddBook);
+
+        private void UpdateBook()
+        {
+            _bookManager.UpdateBook(_selectedBook);
+            UpdatePositions();
+        }
+
+        /// <summary>
+        /// Konstruktor für das MainViewModel.
+        /// </summary>
         public MainViewModel()
         {
             _bookManager = new BookManager();
+            _bookFilter = new FilterManager();
+
             Books = new ObservableCollection<Book>(_bookManager.Books);
             FilteredBooks = new ObservableCollection<Book>(Books);
 
@@ -59,124 +97,18 @@ namespace KMS2_02_LE_01_03.ViewModels
             };
         }
 
-        public int Id => _book.ID;
-        public string NewTitle
-        {
-            get => _book.Title;
-            set
-            {
-                if (_book.Title != value)
-                {
-                    _book.Title = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string NewAuthor
-        {
-            get => _book.Author;
-            set
-            {
-                if (_book.Author != value)
-                {
-                    _book.Author = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string NewGenre
-        {
-            get => _book.Genre;
-            set
-            {
-                if (_book.Genre != value)
-                {
-                    _book.Genre = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        //public DateTime PublicationDate
-        //{
-        //    get => _book.PublicationDate;
-        //    set
-        //    {
-        //        if (_book.PublicationDate != value)
-        //        {
-        //            _book.PublicationDate = value;
-        //            OnPropertyChanged();
-        //        }
-        //    }
-        //}
-
-        public string NewStatus
-        {
-            get => _book.Status;
-            set
-            {
-                if (_book.Status != value)
-                {
-                    _book.Status = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private string _newFilterText;
-        public string NewFilterText
-        {
-            get => _newFilterText;
-            set
-            {
-                if (_newFilterText != value)
-                {
-                    _newFilterText = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
+        /// <summary>
+        /// Filtert die Bücher basierend auf dem Filtertext und der ausgewählten Filteroption.
+        /// </summary>
         private void FilterBooks()
         {
-            FilteredBooks.Clear();
-            var filtered = Books.AsQueryable(); 
-
-            if (!string.IsNullOrEmpty(FilterText))
-            {
-                switch (SelectedFilterOption)
-                {
-                    case "By Title":
-                        filtered = filtered.Where(book => book.Title.Contains(FilterText));
-                        break;
-                    case "By Author":
-                        filtered = filtered.Where(book => book.Author.Contains(FilterText));
-                        break;
-                    case "By Genre":
-                        filtered = filtered.Where(book => book.Genre.Contains(FilterText));
-                        break;
-                    case "By Status":
-                        filtered = filtered.Where(book => book.Status.Contains(FilterText));
-                        break;
-                    case "By Date":
-                        if (DateTime.TryParse(FilterText, out DateTime date))
-                        {
-                            filtered = filtered.Where(book => book.PublicationDate.Date == date.Date);
-                        }
-                        break;
-                }
-            }
-
-            foreach (var book in filtered)
-            {
-                FilteredBooks.Add(book);
-            }
-            OnPropertyChanged(nameof(FilteredBooks)); // Notifikácia zmeny pre DataGrid
+            FilteredBooks = _bookFilter.ApplyFilter(Books, FilterText, SelectedFilterOption);
+            OnPropertyChanged(nameof(FilteredBooks));
         }
 
-
+        /// <summary>
+        /// Filtertext zum Filtern der Bücher.
+        /// </summary>
         public string FilterText
         {
             get => _filterText;
@@ -184,11 +116,13 @@ namespace KMS2_02_LE_01_03.ViewModels
             {
                 _filterText = value;
                 OnPropertyChanged(nameof(FilterText));
-                FilterBooks(); // Volanie filtrovania pri zmene textu filtra
+                FilterBooks(); 
             }
         }
 
-
+        /// <summary>
+        /// Ausgewähltes Buch.
+        /// </summary>
         public Book SelectedBook
         {
             get => _selectedBook;
@@ -197,13 +131,16 @@ namespace KMS2_02_LE_01_03.ViewModels
                 if (_selectedBook != value)
                 {
                     _selectedBook = value;
+                    
                     OnPropertyChanged(nameof(SelectedBook));
-                    OnSelectedBookChanged();
+                    OnPropertyChanged(nameof(IsBookSelected));
                 }
             }
         }
 
-
+        /// <summary>
+        /// Ausgewählte Filteroption zum Filtern der Bücher.
+        /// </summary>
         public string SelectedFilterOption
         {
             get => _selectedFilterOption;
@@ -214,93 +151,64 @@ namespace KMS2_02_LE_01_03.ViewModels
                 FilterBooks(); // Volanie filtrovania pri zmene možnosti filtra
             }
         }
+        /// <summary>
+        /// Gibt an, ob ein Buch ausgewählt ist.
+        /// </summary>
+        public bool IsBookSelected => SelectedBook != null;
+        /// <summary>
+        /// Speichert die Bücher in einer CSV-Datei.
+        /// </summary>
+        private void SaveBook() { SaveCSV.Save(FilteredBooks.ToList()); }
 
-        public DateTime? PublicationDate
-        {
-            get => _publicationDate;
-            set
-            {
-                _publicationDate = value;
-                OnPropertyChanged(nameof(PublicationDate));
-                if (SelectedBook != null)
-                {
-                    SelectedBook.PublicationDate = value ?? DateTime.Now;
-                }
-                else { _publicationDate =  DateTime.Now; }
-            }
-        }
-        public bool IsCalendarVisible
-        {
-            get => _isCalendarVisible;
-            set
-            {
-                if (_isCalendarVisible != value)
-                {
-                    _isCalendarVisible = value;
-                    OnPropertyChanged(nameof(IsCalendarVisible));
-                }
-            }
-        }
-        public void HideCalendar()
-        {
-            IsCalendarVisible = false;
-        }
+        /// <summary>
+        /// Überprüft, ob Bücher gespeichert werden können.
+        /// </summary>
+        private bool CanSave() { return Books.Count > 0; }
 
-        public void ShowCalendar()
-        {
-            IsCalendarVisible = true;
-        }
-        private void OnSelectedBookChanged()
-        {
-            HideCalendar();
-            if (SelectedBook != null)
-            {
-                PublicationDate = SelectedBook.PublicationDate;
-            }        
-        }
-
-
-        public void UpdatePublicationDate()
-        {
-            OnPropertyChanged(nameof(SelectedBook.PublicationDate));
-        }
-
-
-
-
+        /// <summary>
+        /// Lädt Bücher hoch und aktualisiert die Liste.
+        /// </summary>
         private void UploadBooks()
         {
             _bookManager.Books.Clear();
+            Books.Clear();
+
             UploadCSV.Upload();
             var books = new UploadCSV().GetBooks();
             _bookManager.AddBooks(books);
             UpdatePositions();
         }
 
-
-
-
+        /// <summary>
+        /// Fügt ein neues Buch hinzu.
+        /// </summary>
         private void AddBook()
         {
-
             Book newBook = new Book
             {
-                ID = FilteredBooks.Count > 0 ? Books.Max(b => b.ID) + 1 : 1,
-                Title = NewTitle,
-                Author = NewAuthor,
-                Genre = NewGenre,
-                PublicationDate = (DateTime)PublicationDate,
-                Status = NewStatus
+                ID = Books.Count > 0 ? Books.Max(b => b.ID) + 1 : 1,
+                Title = SelectedBook.Title,
+                Author = SelectedBook.Author,
+                Genre = SelectedBook.Genre,
+                PublicationDate = SelectedBook.PublicationDate,
+
+                Status = SelectedBook.Status,
             };
             _bookManager.AddBook(newBook);
             UpdatePositions();
         }
 
+        /// <summary>
+        /// Aktualisiert die Positionen der Bücher in der Liste.
+        /// </summary>
         private void UpdatePositions()
         {
-            for (int i = 0; i < Books.Count; i++) { FilteredBooks[i].ID = i + 1; }
+            for (int i = 0; i < Books.Count; i++) { Books[i].ID = i + 1; CleanWindow(); }
         }
 
+        /// <summary>
+        /// Entfernt das ausgewählte Buch.
+        /// </summary>
         private void RemoveBook()
         {
             if (SelectedBook != null)
@@ -308,38 +216,36 @@ namespace KMS2_02_LE_01_03.ViewModels
                 _bookManager.RemoveBook(SelectedBook.ID);
             }
             UpdatePositions();
+            OnPropertyChanged(nameof(SelectedBook));
         }
 
-        private void UpdateBook()
-        {
-            if (SelectedBook != null)
-            {
-                var book = new Book
-                {
-                    ID = SelectedBook.ID,
-                    Title = SelectedBook.Title,
-                    Author = SelectedBook.Author,
-                    Genre = SelectedBook.Genre,
-                    PublicationDate = SelectedBook.PublicationDate,
-                    Status = SelectedBook.Status
-                };
-                _bookManager.UpdateBook(book);
-            }
-        }
-
+        /// <summary>
+        /// Überprüft, ob ein Buch hinzugefügt werden kann.
+        /// </summary>
         private bool CanAddBook()
         {
-            return !string.IsNullOrWhiteSpace(NewTitle) &&
-                !string.IsNullOrWhiteSpace(NewStatus) &&
-                !string.IsNullOrWhiteSpace(NewGenre) &&
-                !string.IsNullOrWhiteSpace(NewAuthor)&&
-                PublicationDate.HasValue;
+            return 
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Title) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Status) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Genre) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Author) &&
+                   SelectedBook.PublicationDate.HasValue;
         }
-        private bool CanModifyBook()
+
+        /// <summary>
+        /// Überprüft, ob ein Buch entfernt werden kann.
+        /// </summary>
+        private bool CanRemoveBook()
         {
             return SelectedBook != null;
         }
 
- 
+        /// <summary>
+        /// Bereinigt das Fenster und setzt das ausgewählte Buch zurück.
+        /// </summary>
+        private void CleanWindow()
+        {
+            SelectedBook = new Book();
+        }
     }
 }

@@ -4,17 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KMS2_02_LE_01_03.ViewModels"
-        xmlns:mvvm="clr-namespace:KMS2_02_LE_01_03.MVVM"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Book Management Solutions" Height="450" Width="800" ResizeMode="NoResize" Background="#FFCAF6F7">
 
     <Window.DataContext>
         <local:MainViewModel />
     </Window.DataContext>
-
-    <Window.Resources>
-        <mvvm:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </Window.Resources>
 
     <Grid>
         <Grid HorizontalAlignment="Left" Height="414" Margin="159,0,0,0" VerticalAlignment="Center" Width="631">
@@ -27,53 +22,51 @@
                 <ComboBoxItem Content="By Status"/>
                 <ComboBoxItem Content="By Date"/>
             </ComboBox>
-            
-            
-            <DataGrid Name="BooksDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding FilteredBooks}" SelectedItem="{Binding SelectedBook}" Margin="0,218,0,10" IsReadOnly="True">
+
+
+            <DataGrid Name="BooksDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding FilteredBooks}" SelectedItem="{Binding SelectedBook}" Margin="0,218,0,10" IsReadOnly="True" CanUserSortColumns="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Id" Binding="{Binding ID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="35" />
                     <DataGridTextColumn Header="Title" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="180*" />
                     <DataGridTextColumn Header="Author" Binding="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Width="110"/>
                     <DataGridTextColumn Header="Genre" Binding="{Binding Genre, UpdateSourceTrigger=PropertyChanged}" Width="90"/>
-                    <DataGridTextColumn Header="Publication Date" Binding="{Binding PublicationDate, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                    <DataGridTextColumn Header="Publication Date" Binding="{Binding PublicationDate, StringFormat=\{0:dd.MM.yyyy\}, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
                     <DataGridTextColumn Header="Status" Binding="{Binding Status, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
                 </DataGrid.Columns>
             </DataGrid>
 
 
-            <Label x:Name="lblSelectedFilter" Content="Selected Filter" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="lblTitle" Content="Title" HorizontalAlignment="Left" Margin="0,164,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="lblAuthor" Content="Author" HorizontalAlignment="Left" Margin="125,164,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="lblGenre" Content="Genre" HorizontalAlignment="Left" Margin="250,164,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="lblPublicationDate" Content="Publication Date" HorizontalAlignment="Left" Margin="375,164,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="lblStatus" Content="Status" HorizontalAlignment="Left" Margin="500,164,0,0" VerticalAlignment="Top" Width="120"/>
+            <Label x:Name="lblSelectedFilter" Content="Selected Filter" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblTitle" Content="Title" HorizontalAlignment="Left" Margin="0,164,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblAuthor" Content="Author" HorizontalAlignment="Left" Margin="125,164,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblGenre" Content="Genre" HorizontalAlignment="Left" Margin="250,164,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblPublicationDate" Content="Publication Date" HorizontalAlignment="Left" Margin="375,164,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblStatus" Content="Status" HorizontalAlignment="Left" Margin="500,164,0,0" VerticalAlignment="Top" Width="120" FontWeight="Bold"/>
+            <Label x:Name="lblCurrentBooks" Content="Current filtered books:" HorizontalAlignment="Left" Margin="171,4,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
 
-            <TextBox x:Name="txtTitle" HorizontalAlignment="Left" Margin="0,190,0,0" TextWrapping="NoWrap" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" Width="120"/>
-            <TextBox x:Name="txtAuthor" HorizontalAlignment="Left" Margin="125,190,0,0" TextWrapping="NoWrap" Text="{Binding NewAuthor, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
-            <TextBox x:Name="txtGenre" HorizontalAlignment="Left" Margin="250,190,0,0" TextWrapping="NoWrap" Text="{Binding NewGenre, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
-
-            <Border BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left" Margin="375,190,0,0" VerticalAlignment="Top" Width="120">
-                <TextBlock x:Name="txtbPublicationDate" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="NoWrap" Text="{Binding PublicationDate, StringFormat='{}{0:MM/dd/yyyy}', TargetNullValue='Select a date', UpdateSourceTrigger=PropertyChanged}" Background="White" MouseDown="txtbPublicationDate_MouseDown"/>
-            </Border>
-
-
-
-
-
-
-            <TextBox x:Name="txtStatus" HorizontalAlignment="Left" Margin="500,190,0,0" TextWrapping="NoWrap" Text="{Binding NewStatus, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
+            <TextBox x:Name="txtTitle" HorizontalAlignment="Left" Margin="0,190,0,0" TextWrapping="NoWrap" Text="{Binding SelectedBook.Title, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" Width="120"/>
+            <TextBox x:Name="txtAuthor" HorizontalAlignment="Left" Margin="125,190,0,0" TextWrapping="NoWrap" Text="{Binding SelectedBook.Author, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
+            <TextBox x:Name="txtGenre" HorizontalAlignment="Left" Margin="250,190,0,0" TextWrapping="NoWrap" Text="{Binding SelectedBook.Genre, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" Height="18"/>
+            <TextBox x:Name="txtStatus" HorizontalAlignment="Left" Margin="500,190,0,0" TextWrapping="NoWrap" Text="{Binding SelectedBook.Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120"/>
             <TextBox x:Name="txtFilter" HorizontalAlignment="Left" Margin="171,30,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-            <Calendar x:Name="PublicationDateCalendar" HorizontalAlignment="Left" Margin="375,220,0,0" VerticalAlignment="Top" Height="167" Width="196" Visibility="{Binding IsCalendarVisible, Converter={StaticResource BooleanToVisibilityConverter}}" SelectedDatesChanged="PublicationDateCalendar_SelectedDatesChanged" LostFocus="PublicationDateCalendar_LostFocus"/>
-            <TextBlock x:Name="txtbSelectedFilter" HorizontalAlignment="Left" Margin="171,11,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="120"/>
-          
-        </Grid>
-        <Grid HorizontalAlignment="Left" Height="371" Margin="10,10,0,0" VerticalAlignment="Top" Width="131">
-            <Button x:Name="btnAddBook" Content="Add Book" HorizontalAlignment="Left" Margin="22,50,0,0" VerticalAlignment="Top" Width="78" Command="{Binding AddBookCommand}"/>
-            <Button x:Name="btnDeleteBook" Content="Delete Book" HorizontalAlignment="Left" Margin="22,99,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.497,3.107" Width="78" Command="{Binding RemoveBookCommand}"/>
-            <Button x:Name="btnUpdateBook" Content="Update Book" HorizontalAlignment="Left" Margin="22,156,0,0" VerticalAlignment="Top" Width="78" Command="{Binding UpdateBookCommand}"/>
-            <Button x:Name="btnUploadBooks" Content="Upload Books" HorizontalAlignment="Left" Margin="22,212,0,0" VerticalAlignment="Top" Command="{Binding UploadBookCommand}"/>
+            <DatePicker HorizontalAlignment="Left" Margin="375,186,0,0" Width="120" Height="25" VerticalAlignment="Top" SelectedDate="{Binding SelectedBook.PublicationDate}" />
+
+            <TextBlock x:Name="txtbSelectedFilter" HorizontalAlignment="Left" Margin="309,9,0,0" TextWrapping="Wrap" Text="{Binding FilteredBooks.Count}" VerticalAlignment="Top" Width="50" FontWeight="Bold"/>
+            
+            
+
+
+
 
         </Grid>
+        <Grid HorizontalAlignment="Left" Height="371" Margin="10,10,0,0" VerticalAlignment="Top" Width="131">
+            <Button x:Name="btnAddBook" Content="Add Book" Margin="1,10,10,0" Command="{Binding AddBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnDeleteBook" Content="Delete Book" Margin="1,80,10,0" Command="{Binding RemoveBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnSaveBook" Content="Save Book" Margin="1,150,10,0" Command="{Binding SaveBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnUpdateBook" Content="Update Book" Margin="1,220,10,0" Command="{Binding UpdateBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnUploadBooks" Content="Upload Books" Margin="1,290,10,0" Command="{Binding UploadBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+        </Grid>
+
     </Grid>
 </Window>
