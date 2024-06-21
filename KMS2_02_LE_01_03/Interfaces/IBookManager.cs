@@ -20,7 +20,7 @@ namespace KMS2_02_LE_01_03.Interfaces
         /// Fügt mehrere Bücher zur Sammlung hinzu.
         /// </summary>
         /// <param name="uploadBooks">Die hinzuzufügenden Bücher.</param>
-        void AddBooks(IEnumerable<Book> uploadBooks);
+        void AddBooks(List<Book> uploadBooks);
 
         /// <summary>
         /// Entfernt ein Buch anhand seiner ID.

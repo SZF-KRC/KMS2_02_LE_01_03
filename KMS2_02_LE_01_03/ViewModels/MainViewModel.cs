@@ -18,6 +18,7 @@ namespace KMS2_02_LE_01_03.ViewModels
         private Book _selectedBook;
         private string _filterText;
         private string _selectedFilterOption;
+        private Book _selectedValue;
 
         private readonly FilterManager _bookFilter;
 
@@ -54,7 +55,7 @@ namespace KMS2_02_LE_01_03.ViewModels
         /// <summary>
         /// Befehl zum Aktualisieren der Bücher.
         /// </summary>
-        public RelayCommand UpdateBookCommand => new RelayCommand(UpdateBook, CanAddBook);
+        public RelayCommand UpdateBookCommand => new RelayCommand(UpdateBook, CanUpdateBook);
 
         private void UpdateBook()
         {
@@ -133,7 +134,23 @@ namespace KMS2_02_LE_01_03.ViewModels
                     _selectedBook = value;
                     
                     OnPropertyChanged(nameof(SelectedBook));
-                    OnPropertyChanged(nameof(IsBookSelected));
+                }
+            }
+        }
+
+        public Book SelectedValue
+        {
+            get => _selectedValue;
+            set
+            {
+                if (_selectedValue != value)
+                {
+                    _selectedValue = value;
+                    OnPropertyChanged(nameof(SelectedValue));
+                    if (_selectedValue != null)
+                    {
+                        SelectedBook = _selectedValue;
+                    }
                 }
             }
         }
@@ -151,10 +168,7 @@ namespace KMS2_02_LE_01_03.ViewModels
                 FilterBooks(); // Volanie filtrovania pri zmene možnosti filtra
             }
         }
-        /// <summary>
-        /// Gibt an, ob ein Buch ausgewählt ist.
-        /// </summary>
-        public bool IsBookSelected => SelectedBook != null;
+
         /// <summary>
         /// Speichert die Bücher in einer CSV-Datei.
         /// </summary>
@@ -173,10 +187,15 @@ namespace KMS2_02_LE_01_03.ViewModels
             _bookManager.Books.Clear();
             Books.Clear();
 
-            UploadCSV.Upload();
-            var books = new UploadCSV().GetBooks();
-            _bookManager.AddBooks(books);
-            UpdatePositions();
+            var books = UploadCSV.Upload();
+
+            if (books !=null)
+            {
+                _bookManager.AddBooks(books);
+                UpdatePositions();
+            }
+
+
         }
 
         /// <summary>
@@ -229,6 +248,20 @@ namespace KMS2_02_LE_01_03.ViewModels
                    !string.IsNullOrWhiteSpace(SelectedBook?.Status) &&
                    !string.IsNullOrWhiteSpace(SelectedBook?.Genre) &&
                    !string.IsNullOrWhiteSpace(SelectedBook?.Author) &&
+                   SelectedValue == null &&
+                   SelectedBook.PublicationDate.HasValue;
+        }
+        /// <summary>
+        /// Überprüft, ob ein Buch hinzugefügt werden kann.
+        /// </summary>
+        private bool CanUpdateBook()
+        {
+            return 
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Title) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Status) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Genre) &&
+                   !string.IsNullOrWhiteSpace(SelectedBook?.Author) &&   
+                   SelectedValue != null &&
                    SelectedBook.PublicationDate.HasValue;
         }
 
@@ -237,7 +270,7 @@ namespace KMS2_02_LE_01_03.ViewModels
         /// </summary>
         private bool CanRemoveBook()
         {
-            return SelectedBook != null;
+            return SelectedValue != null;
         }
 
         /// <summary>
@@ -246,6 +279,7 @@ namespace KMS2_02_LE_01_03.ViewModels
         private void CleanWindow()
         {
             SelectedBook = new Book();
+            SelectedValue = null;
         }
     }
 }

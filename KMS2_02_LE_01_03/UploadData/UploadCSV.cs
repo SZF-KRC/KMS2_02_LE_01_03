@@ -16,11 +16,12 @@ namespace KMS2_02_LE_01_03.UploadData
         /// <summary>
         /// Öffnet einen Dateiöffnungsdialog und lädt die Bücher aus der ausgewählten CSV-Datei.
         /// </summary>
-        public static void Upload()
+        public static List<Book> Upload()
         {
             try
             {
                 string filePath = OpenDialog.OpenFile("Enter book please...");
+                if(filePath == null) { return null; }
                 _books = new List<Book>();
                 using(StreamReader sr = new StreamReader(filePath))
                 {
@@ -39,6 +40,8 @@ namespace KMS2_02_LE_01_03.UploadData
             catch (FileFormatException ex) { MessageBox.Show(ex.Message); }
             catch (FileNotFoundException ex) { MessageBox.Show(ex.Message); }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+
+            return _books;
         }
 
         /// <summary>

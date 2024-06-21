@@ -35,6 +35,11 @@ namespace KMS2_02_LE_01_03.Events.BookEvents
             OnBookAdded(new BookEventArgs("Book succesfully added !", DateTime.Now));
         }
 
+        public void AddBooks()
+        {
+            OnBookAdded(new BookEventArgs("Books succesfully added !", DateTime.Now));
+        }
+
         /// <summary>
         /// Methode zum Entfernen eines Buches und Auslösen des entsprechenden Ereignisses.
         /// </summary>

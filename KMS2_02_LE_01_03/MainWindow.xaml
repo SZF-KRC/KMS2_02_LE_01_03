@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KMS2_02_LE_01_03.ViewModels"
         mc:Ignorable="d"
-        Title="Book Management Solutions" Height="450" Width="800" ResizeMode="NoResize" Background="#FFCAF6F7">
+        Title="Book Management Solutions" Height="450" Width="820" ResizeMode="NoResize" Background="#FFCAF6F7">
 
     <Window.DataContext>
         <local:MainViewModel />
@@ -24,7 +24,7 @@
             </ComboBox>
 
 
-            <DataGrid Name="BooksDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding FilteredBooks}" SelectedItem="{Binding SelectedBook}" Margin="0,218,0,10" IsReadOnly="True" CanUserSortColumns="True">
+            <DataGrid Name="BooksDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding FilteredBooks}" Margin="0,218,0,10" IsReadOnly="True" CanUserSortColumns="True" SelectedValue="{Binding SelectedValue}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Id" Binding="{Binding ID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Width="35" />
                     <DataGridTextColumn Header="Title" Binding="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Width="180*" />
@@ -63,8 +63,8 @@
         <Grid HorizontalAlignment="Left" Height="371" Margin="10,10,0,0" VerticalAlignment="Top" Width="131">
             <Button x:Name="btnAddBook" Content="Add Book" Margin="1,10,10,0" Command="{Binding AddBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
             <Button x:Name="btnDeleteBook" Content="Delete Book" Margin="1,80,10,0" Command="{Binding RemoveBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
-            <Button x:Name="btnSaveBook" Content="Save Book" Margin="1,150,10,0" Command="{Binding SaveBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
-            <Button x:Name="btnUpdateBook" Content="Update Book" Margin="1,220,10,0" Command="{Binding UpdateBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnUpdateBook" Content="Update Book" Margin="1,150,10,0" Command="{Binding UpdateBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
+            <Button x:Name="btnSaveBook" Content="Save Book" Margin="1,220,10,0" Command="{Binding SaveBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
             <Button x:Name="btnUploadBooks" Content="Upload Books" Margin="1,290,10,0" Command="{Binding UploadBookCommand}" Style="{StaticResource MainButtonStyle}" VerticalAlignment="Top"/>
         </Grid>
 

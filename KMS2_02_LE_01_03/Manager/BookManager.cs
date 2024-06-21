@@ -53,13 +53,13 @@ namespace KMS2_02_LE_01_03.Manager
         /// Fügt mehrere Bücher zur Sammlung hinzu.
         /// </summary>
         /// <param name="uploadBooks">Die hinzuzufügenden Bücher.</param>
-        public void AddBooks(IEnumerable<Book> uploadBooks)
-        {
+        public void AddBooks(List<Book> uploadBooks)
+        {           
             foreach (Book book in uploadBooks)
             {
                 Books.Add(book);
             }
-            process.AddBook();
+            process.AddBooks();          
         }
 
         /// <summary>
